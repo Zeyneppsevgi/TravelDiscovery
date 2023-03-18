@@ -25,71 +25,69 @@ struct PopularDestinationsView: View {
                 Text("See all")
                     .font(.system(size: 12, weight: .semibold))
             }.padding(.horizontal)
-                .padding(.top)
+            .padding(.top)
+            
             ScrollView(.horizontal) {
                 HStack(spacing: 8.0) {
-                    ForEach(destinations,id:\.self) { destination in
-                        NavigationLink(destination: Text("Destination"),
-                                       label: {
-                            PopularDestinationTile(destination: destination)
-                                
-                                .padding(.bottom)
-                        })
+                    ForEach(destinations, id: \.self) { destination in
+                        NavigationLink(
+                            destination: PopularDestinationDetailsView(destination: destination),
+                            label: {
+                                PopularDestinationTile(destination: destination)
+                                    .padding(.bottom)
+                            })
                        
                     }
                 }.padding(.horizontal)
             }
         }
-        
     }
 }
-
 struct PopularDestinationDetailsView: View {
     
     let destination: Destination
     
-   // @State var region = MKCoordinateRegion(center: .init(latitude: 48.859565, longitude: 2.353235),span: .init(latitudeDelta: 0.1, longitudeDelta: 0.1) )
-    @State var region : MKCoordinateRegion
-    @State var isShowingAttractions = false
+    @State var region: MKCoordinateRegion
+    @State var isShowingAttractions = true
     
     init(destination: Destination) {
         self.destination = destination
-        self._region = State(initialValue: MKCoordinateRegion(center: .init(latitude: destination.latitude, longitude: destination.longitude),span: .init(latitudeDelta: 0.1, longitudeDelta: 0.1) ))
-      
+        self._region = State(initialValue: MKCoordinateRegion(center: .init(latitude: destination.latitude, longitude: destination.longitude), span: .init(latitudeDelta: 0.1, longitudeDelta: 0.1)))
     }
     
+    let imageUrlStrings = [
+        "https://letsbuildthatapp-videos.s3-us-west-2.amazonaws.com/2240d474-2237-4cd3-9919-562cd1bb439e",
+        "https://letsbuildthatapp-videos.s3-us-west-2.amazonaws.com/b1642068-5624-41cf-83f1-3f6dff8c1702",
+        "https://letsbuildthatapp-videos.s3-us-west-2.amazonaws.com/6982cc9d-3104-4a54-98d7-45ee5d117531"
+    ]
     
     var body: some View {
-        
-        
         ScrollView {
+            DestinationHeaderContainer(imageUrlStrings: imageUrlStrings)
+                .frame(height: 250)
             
-            DestinationHeaderContainer()
-                .frame(width:  250)
-            //Image(destination.imageName)
-                //.resizable()
-                //.scaledToFill()
-         
-                //.clipped()
-            VStack (alignment: .leading){
+//            Image(destination.imageName)
+//                .resizable()
+//                .scaledToFill()
+//                .clipped()
+            
+            VStack(alignment: .leading) {
                 Text(destination.name)
-                    .font(.system(size: 18,weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                 Text(destination.country)
                 
                 HStack {
-                    ForEach(0..<5, id:\.self) {num in
+                    ForEach(0..<5, id: \.self) { num in
                         Image(systemName: "star.fill")
                             .foregroundColor(.orange)
                     }
-                }.padding(.top,2)
+                }.padding(.top, 2)
                 
                 Text("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.")
-                    .padding(.top,4)
+                    .padding(.top, 4)
                     .font(.system(size: 14))
-                HStack{
-                    Spacer()
-                }
                 
+                HStack{ Spacer() }
             }
             .padding(.horizontal)
             
@@ -109,7 +107,6 @@ struct PopularDestinationDetailsView: View {
                 
             }.padding(.horizontal)
             
-          
             Map(coordinateRegion: $region, annotationItems: isShowingAttractions ? attractions : []) { attraction in
 //                MapMarker(coordinate: .init(latitude: attraction.latitude, longitude: attraction.longitude), tint: .blue)
                 MapAnnotation(coordinate: .init(latitude: attraction.latitude, longitude: attraction.longitude)) {
