@@ -43,7 +43,38 @@ struct PopularDestinationsView: View {
         }
     }
 }
+struct DestinationDetails: Decodable {
+    let description: String
+    let photos: [String]
+}
+
+class PopularDestinationDetailsViewModel: ObservableObject {
+    @Published var isLoading = true
+    @ Published var destinationDetails: DestinationDetails?
+    
+    init() {
+        let name = "paris"
+        guard let url = URL(string: ":https://travel.letsbuildthatapp.com/travel_discovery/destination?name=\(name)")
+        else { return }
+        URLSession.shared.dataTask(with: url) { (data, resp, err) in
+            
+            guard let data = data else { return }
+          //  print(String(data: data, encoding: .utf8))
+            
+            do {
+                self.destinationDetails = try JSONDecoder().decode(DestinationDetails.self, from:data)
+                
+            } catch {
+                print("Failed to decode JSON,",error)
+            }
+            
+        }.resume()
+    }
+}
+
 struct PopularDestinationDetailsView: View {
+    
+    @ObservedObject var vm = PopularDestinationDetailsViewModel()
     
     let destination: Destination
     
